@@ -95,6 +95,7 @@ function App() {
   const [workerStats, setWorkerStats] = useS({ viewsWeek: 47, viewsDelta: 12, contactsWeek: 8, contactsDelta: 3 });
   const [jobsExpanded, setJobsExpanded] = useS(false);
   const [reportTarget, setReportTarget] = useS(null);
+  const [contactToast, setContactToast] = useS(null); // { workerName } | null
 
   const go = (id, params = {}) => {
     setHistory((h) => [...h, route]);
@@ -135,12 +136,17 @@ function App() {
 
   // Actions
   const contactWorker = (worker) => {
-    // Simulate opening WhatsApp + queueing follow-up
+    // PROTOTYPE: este botón NO abre WhatsApp real. Simula el contacto
+    // y dispara el loop de seguimiento. En producción, abriría wa.me
+    // con un mensaje pre-cargado al teléfono verificado del trabajador.
     const id = "fu-" + Date.now();
     setFollowups((arr) => [{ id, workerId: worker.id, contactedAt: new Date().toISOString(), status: "pending" }, ...arr]);
     setWorkerStats((s) => ({ ...s, contactsWeek: s.contactsWeek + 1 }));
-    // Open WhatsApp in new tab (simulated — won't actually open)
-    window.open(`https://wa.me/${worker.phone.replace(/\D/g, "")}?text=${encodeURIComponent(`Hola ${worker.name.split(" ")[0]}, te encontré en Ubiklos. ¿Estás disponible?`)}`, "_blank");
+    // Muestra confirmación visible de que el contacto se registró (simulado)
+    setContactToast({
+      workerName: worker.name.split(" ")[0],
+      shownAt: Date.now(),
+    });
     go("client.home");
   };
 
@@ -309,6 +315,14 @@ function App() {
       {/* Persona bar — sits outside the phone, like a designer tool */}
       <PersonaBar persona={persona} switchPersona={switchPersona} ctx={ctx} />
 
+      {/* Contact simulation toast (DEMO ONLY) */}
+      {contactToast && (
+        <ContactSimToast
+          workerName={contactToast.workerName}
+          onClose={() => setContactToast(null)}
+        />
+      )}
+
       {/* Report sheet (global) */}
       <Sheet open={!!reportTarget} onClose={() => setReportTarget(null)} title="Reportar perfil">
         {reportTarget && (
@@ -443,7 +457,7 @@ function PersonaBar({ persona, switchPersona, ctx }) {
         ))}
       </div>
       <div className="persona-bar-foot">
-        Demo — todos los datos son ficticios. WhatsApp se abre por wa.me con mensaje pre-cargado.
+        Demo — todos los datos y teléfonos son ficticios. El botón de WhatsApp no abre nada real, solo simula el flujo.
       </div>
     </div>
   );

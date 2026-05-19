@@ -1,8 +1,8 @@
-// Ubiklos Service Worker v1.0.0
+// Ubiklos Service Worker v1.2.0
 // Estrategia: network-first con fallback a cache.
 // Para invalidar caché al actualizar el proto, sube el número de versión abajo.
 
-const CACHE_VERSION = 'ubiklos-v1.0.0';
+const CACHE_VERSION = 'ubiklos-v1.2.0';
 const PRECACHE_URLS = [
   './',
   './index.html',

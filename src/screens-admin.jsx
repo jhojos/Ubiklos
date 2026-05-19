@@ -181,7 +181,7 @@ function ScreenAdminReview({ ctx, params }) {
           <Card style={{ padding: 14 }}>
             <Row k="Nombre" v={pending.name} />
             <Row k="Cédula" v={pending.cedula} />
-            <Row k="Teléfono" v={pending.phone} />
+            <Row k="Teléfono" v={`${pending.phone} (ficticio · demo)`} />
             <Row k="Oficios" v={pending.oficios.join(", ")} />
             <Row k="Municipios" v={pending.municipios.join(", ")} last />
           </Card>

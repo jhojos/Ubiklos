@@ -15,6 +15,13 @@ function ScreenHome({ ctx }) {
     [...WORKERS].sort((a, b) => (a.activeDays - b.activeDays) || (b.confirmedJobs - a.confirmedJobs)).slice(0, 6),
   []);
 
+  // Stats reales calculados desde el mock data
+  const stats = useMemoC(() => ({
+    workers: WORKERS.length,
+    jobs: WORKERS.reduce((s, w) => s + (w.confirmedJobs || 0), 0),
+    municipios: MUNICIPIOS.length,
+  }), []);
+
   const doSearch = () => ctx.go("client.search", { oficio, municipio });
 
   return (
@@ -48,23 +55,89 @@ function ScreenHome({ ctx }) {
       )}
 
       {/* Hero */}
-      <div style={{ padding: "28px 18px 14px" }}>
-        <h1 style={{
-          font: `700 28px/1.15 var(--font-display)`,
-          color: "var(--color-text)",
-          margin: 0,
-          letterSpacing: -0.6,
-          textWrap: "balance",
+      <div style={{ padding: "22px 18px 14px" }}>
+        {/* Mini-etiqueta categórica */}
+        <div style={{
+          display: "inline-flex",
+          alignItems: "center",
+          gap: 6,
+          padding: "5px 10px",
+          background: "var(--color-primary-soft)",
+          color: "var(--color-primary-dark)",
+          borderRadius: 999,
+          font: "600 11px/1 var(--font-sans)",
+          letterSpacing: 0.3,
+          textTransform: "uppercase",
+          marginBottom: 12,
         }}>
-          Encuentra plomeros, electricistas y más en tu zona de Caracas.
-        </h1>
-        <p style={{
-          font: "500 14px/1.45 var(--font-sans)",
-          color: "var(--color-text-muted)",
-          margin: "10px 0 0",
-        }}>
-          Trabajadores verificados, con historial de trabajos confirmados por clientes reales.
-        </p>
+          <span style={{
+            width: 6, height: 6, borderRadius: "50%",
+            background: "var(--color-primary)",
+            display: "inline-block",
+          }} />
+          Directorio de oficios · Caracas
+        </div>
+
+        {/* Titular + isotipo */}
+        <div style={{ display: "flex", alignItems: "flex-start", gap: 12 }}>
+          <div style={{ flex: 1, minWidth: 0 }}>
+            <h1 style={{
+              font: `700 26px/1.15 var(--font-display)`,
+              color: "var(--color-text)",
+              margin: 0,
+              letterSpacing: -0.6,
+              textWrap: "balance",
+            }}>
+              Encuentra plomeros, electricistas y más en tu zona.
+            </h1>
+            <p style={{
+              font: "500 14px/1.45 var(--font-sans)",
+              color: "var(--color-text-muted)",
+              margin: "10px 0 0",
+            }}>
+              Trabajadores verificados con historial de trabajos confirmados por clientes reales.
+            </p>
+          </div>
+          <img
+            src="icons/icon-192.png"
+            alt=""
+            style={{
+              width: 64,
+              height: 64,
+              borderRadius: 16,
+              flexShrink: 0,
+              boxShadow: "0 4px 12px rgba(14,21,48,0.10)",
+              border: "1px solid var(--color-border)",
+            }}
+          />
+        </div>
+
+        {/* Chips de confianza */}
+        <div style={{ display: "flex", flexWrap: "wrap", gap: 6, marginTop: 14 }}>
+          {[
+            "Cédula verificada",
+            "Sin comisiones",
+            "Trabajos confirmados",
+          ].map((t) => (
+            <span key={t} style={{
+              display: "inline-flex",
+              alignItems: "center",
+              gap: 5,
+              padding: "5px 9px 5px 7px",
+              background: "#fff",
+              border: "1px solid var(--color-border)",
+              borderRadius: 999,
+              font: "600 11.5px/1 var(--font-sans)",
+              color: "var(--color-text)",
+            }}>
+              <svg width="11" height="11" viewBox="0 0 11 11" fill="none">
+                <circle cx="5.5" cy="5.5" r="5" fill="var(--color-primary)" />
+                <path d="M3.3 5.6l1.6 1.4 2.8-3" stroke="#fff" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" fill="none"/>
+              </svg>
+              {t}
+            </span>
+          ))}
+        </div>
       </div>
 
       {/* Search panel */}
@@ -97,8 +170,80 @@ function ScreenHome({ ctx }) {
         </div>
       </div>
 
+      {/* Stats bar */}
+      <div style={{ padding: "18px 18px 0" }}>
+        <div style={{
+          display: "grid",
+          gridTemplateColumns: "1fr 1fr 1fr",
+          background: "var(--color-bg-soft)",
+          border: "1px solid var(--color-border)",
+          borderRadius: 14,
+          overflow: "hidden",
+        }}>
+          {[
+            { n: stats.workers, l: "trabajadores" },
+            { n: stats.jobs, l: "trabajos confirmados" },
+            { n: stats.municipios, l: "municipios" },
+          ].map((s, i) => (
+            <div key={s.l} style={{
+              padding: "12px 8px",
+              textAlign: "center",
+              borderLeft: i > 0 ? "1px solid var(--color-border)" : "none",
+            }}>
+              <div style={{
+                font: "700 20px/1 var(--font-display)",
+                color: "var(--color-text)",
+                letterSpacing: -0.5,
+              }}>{s.n}</div>
+              <div style={{
+                font: "500 11px/1.2 var(--font-sans)",
+                color: "var(--color-text-muted)",
+                marginTop: 4,
+              }}>{s.l}</div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Por qué Ubiklos */}
+      <div style={{ padding: "26px 18px 8px" }}>
+        <SectionLabel>Por qué Ubiklos</SectionLabel>
+        <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+          {[
+            { t: "Identidad verificada", d: "Cada trabajador valida su cédula antes de aparecer en el directorio." },
+            { t: "Historial real", d: "Los trabajos cuentan solo cuando el cliente los confirma. No hay reseñas falsas." },
+            { t: "Sin intermediarios", d: "Hablas directo por WhatsApp. Ubiklos no cobra comisiones ni intermedia pagos." },
+          ].map((r) => (
+            <div key={r.t} style={{
+              display: "flex",
+              gap: 12,
+              alignItems: "flex-start",
+              padding: "12px 14px",
+              background: "#fff",
+              border: "1px solid var(--color-border)",
+              borderRadius: 12,
+            }}>
+              <div style={{
+                width: 26, height: 26, borderRadius: 8,
+                background: "var(--color-primary)",
+                display: "flex", alignItems: "center", justifyContent: "center",
+                flexShrink: 0,
+              }}>
+                <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+                  <path d="M3 7.2l2.5 2.3L11 4.2" stroke="#fff" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/>
+                </svg>
+              </div>
+              <div style={{ minWidth: 0 }}>
+                <div style={{ font: "700 14px/1.3 var(--font-display)", color: "var(--color-text)" }}>{r.t}</div>
+                <div style={{ font: "500 13px/1.45 var(--font-sans)", color: "var(--color-text-muted)", marginTop: 3 }}>{r.d}</div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
       {/* How it works */}
-      <div style={{ padding: "28px 18px 8px" }}>
+      <div style={{ padding: "20px 18px 8px" }}>
         <SectionLabel>Cómo funciona</SectionLabel>
         <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
           {[
@@ -502,22 +647,48 @@ function ScreenProfile({ ctx, params }) {
           </div>
         </div>
 
-        {/* Activity row */}
-        <div style={{ display: "flex", gap: 14, marginTop: 16, flexWrap: "wrap" }}>
-          {worker.activeDays <= 7 && (
-            <span style={{ display: "inline-flex", alignItems: "center", gap: 5, font: "500 12.5px/1 var(--font-sans)", color: "var(--color-text-muted)" }}>
-              <span style={{ width: 7, height: 7, borderRadius: "50%", background: "#25D366" }} />
-              {activityLabel(worker.activeDays)}
-            </span>
+        {/* Stats grid */}
+        <div style={{
+          display: "grid",
+          gridTemplateColumns: hasRating ? "1fr 1fr 1fr" : "1fr 1fr",
+          gap: 8,
+          marginTop: 16,
+          padding: "12px 4px",
+          background: "var(--color-bg-soft)",
+          border: "1px solid var(--color-border)",
+          borderRadius: 12,
+        }}>
+          <div style={{ textAlign: "center", padding: "2px 4px" }}>
+            <div style={{ font: "700 20px/1 var(--font-display)", color: "var(--color-text)", letterSpacing: -0.4 }}>{worker.confirmedJobs}</div>
+            <div style={{ font: "500 10.5px/1.2 var(--font-sans)", color: "var(--color-text-muted)", marginTop: 3 }}>trabajos confirmados</div>
+          </div>
+          {hasRating && (
+            <div style={{ textAlign: "center", padding: "2px 4px", borderLeft: "1px solid var(--color-border)" }}>
+              <div style={{ font: "700 20px/1 var(--font-display)", color: "var(--color-text)", letterSpacing: -0.4 }}>{worker.rating}</div>
+              <div style={{ font: "500 10.5px/1.2 var(--font-sans)", color: "var(--color-text-muted)", marginTop: 3 }}>{worker.ratingsCount} calificaciones</div>
+            </div>
           )}
-          <span style={{ font: "500 12.5px/1 var(--font-sans)", color: "var(--color-text-muted)" }}>
-            Miembro desde {formatDate(worker.memberSince)}
-          </span>
+          <div style={{ textAlign: "center", padding: "2px 4px", borderLeft: "1px solid var(--color-border)" }}>
+            <div style={{
+              font: "700 13.5px/1.1 var(--font-display)",
+              color: worker.activeDays <= 7 ? "#1a8a4a" : "var(--color-text)",
+              letterSpacing: -0.3,
+              display: "flex", alignItems: "center", justifyContent: "center", gap: 5,
+            }}>
+              {worker.activeDays <= 7 && (
+                <span style={{ width: 7, height: 7, borderRadius: "50%", background: "#25D366", display: "inline-block" }} />
+              )}
+              {activityLabel(worker.activeDays)}
+            </div>
+            <div style={{ font: "500 10.5px/1.2 var(--font-sans)", color: "var(--color-text-muted)", marginTop: 3 }}>
+              desde {formatDate(worker.memberSince)}
+            </div>
+          </div>
         </div>
       </div>
 
       {/* Verification badges row */}
-      <div className="hide-scroll" style={{ display: "flex", gap: 6, padding: "16px 20px 0", overflowX: "auto" }}>
+      <div className="hide-scroll" style={{ display: "flex", gap: 6, padding: "14px 20px 0", overflowX: "auto" }}>
         {worker.verified && <Badge icon={<IconShieldCheck size={13} />} label="Cédula verificada" />}
         {worker.whatsapp && <Badge icon={<IconWhatsapp size={13} />} label="WhatsApp verificado" />}
         {worker.location && <Badge icon={<IconPin size={13} />} label="Ubicación verificada" />}
@@ -684,7 +855,7 @@ function ScreenProfile({ ctx, params }) {
             </div>
           </div>
           <Notice tone="info" icon={<IconChat size={18} />}>
-            Vamos a abrir WhatsApp con este mensaje pre-cargado:
+            Mensaje que se enviaría por WhatsApp:
           </Notice>
           <div style={{
             background: "rgba(37,211,102,0.07)",
@@ -694,11 +865,28 @@ function ScreenProfile({ ctx, params }) {
           }}>
             "Hola {worker.name.split(" ")[0]}, te encontré en Ubiklos. Necesito ayuda con {officios[0]?.label.toLowerCase()}. ¿Estás disponible?"
           </div>
-          <div style={{ font: "500 11.5px/1.4 var(--font-sans)", color: "var(--color-text-muted)", marginTop: 14, marginBottom: 14 }}>
+          <div style={{
+            marginTop: 12,
+            padding: "10px 12px",
+            background: "rgba(229,160,25,0.10)",
+            border: "1px solid rgba(229,160,25,0.25)",
+            borderRadius: 10,
+            font: "500 12px/1.45 var(--font-sans)",
+            color: "var(--color-text)",
+            display: "flex", gap: 8, alignItems: "flex-start",
+          }}>
+            <span style={{
+              fontSize: 14, lineHeight: 1, marginTop: 1,
+            }}>⚠️</span>
+            <span>
+              <strong>Demo del prototipo:</strong> al continuar no se abrirá WhatsApp. Esto es solo una simulación para mostrar el flujo. En el producto real, este botón abre WhatsApp con el mensaje pre-cargado.
+            </span>
+          </div>
+          <div style={{ font: "500 11.5px/1.4 var(--font-sans)", color: "var(--color-text-muted)", marginTop: 12, marginBottom: 14 }}>
             En 48 horas te pediremos confirmar si lograron coordinar el trabajo. Eso construye su historial verificable.
           </div>
           <Button variant="whatsapp" size="lg" full icon={<IconWhatsapp size={20} />} onClick={handleWhatsapp}>
-            Abrir WhatsApp
+            Simular contacto
           </Button>
         </div>
       </Sheet>

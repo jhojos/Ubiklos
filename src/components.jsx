@@ -424,8 +424,73 @@ function WorkerCard({ worker, onOpen, density = "regular", layout = "horizontal"
   );
 }
 
+// ── Contact Simulation Toast (DEMO) ─────────────────────────────────────
+// Cuando el cliente "contacta" a un trabajador, este toast se muestra en lugar
+// de abrir WhatsApp real. Deja claro que es un prototipo y que en producción
+// abriría WhatsApp con un mensaje pre-cargado.
+function ContactSimToast({ workerName, onClose }) {
+  const [closing, setClosing] = React.useState(false);
+  React.useEffect(() => {
+    const t = setTimeout(() => {
+      setClosing(true);
+      setTimeout(onClose, 220);
+    }, 4500);
+    return () => clearTimeout(t);
+  }, [onClose]);
+
+  return (
+    <div style={{
+      position: "fixed",
+      bottom: 24, left: "50%", transform: "translateX(-50%)",
+      zIndex: 9999,
+      maxWidth: 380, width: "calc(100vw - 32px)",
+      background: "#0E1530",
+      color: "#fff",
+      borderRadius: 16,
+      padding: "14px 16px",
+      display: "flex",
+      gap: 12,
+      alignItems: "flex-start",
+      boxShadow: "0 12px 32px rgba(0,0,0,0.25)",
+      animation: closing ? "toastOut .2s forwards" : "toastIn .25s ease-out",
+    }}>
+      <div style={{
+        width: 36, height: 36, flexShrink: 0,
+        borderRadius: 10,
+        background: "var(--color-whatsapp, #25D366)",
+        display: "flex", alignItems: "center", justifyContent: "center",
+      }}>
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="#fff">
+          <path d="M17.6 6.3A8 8 0 0 0 4 12c0 1.4.4 2.8 1.1 4L4 20l4.1-1.1A8 8 0 0 0 20 12a7.9 7.9 0 0 0-2.4-5.7zM12 18.5a6.6 6.6 0 0 1-3.3-.9l-.2-.1-2.4.6.7-2.3-.2-.3a6.5 6.5 0 1 1 5.4 3z"/>
+        </svg>
+      </div>
+      <div style={{ flex: 1, minWidth: 0 }}>
+        <div style={{ font: "600 13.5px/1.3 var(--font-display)", marginBottom: 4 }}>
+          Contacto registrado con {workerName}
+        </div>
+        <div style={{ font: "500 12px/1.45 var(--font-sans)", opacity: 0.75 }}>
+          Demo del prototipo: en el producto real aquí se abriría WhatsApp
+          con un mensaje pre-cargado. Te llegará un seguimiento para confirmar
+          si el trabajo se concretó.
+        </div>
+      </div>
+      <button onClick={() => { setClosing(true); setTimeout(onClose, 220); }}
+        style={{
+          all: "unset", cursor: "pointer",
+          padding: 4, marginTop: -2,
+          opacity: 0.6,
+        }} aria-label="Cerrar">
+        <svg width="16" height="16" viewBox="0 0 16 16" stroke="#fff" strokeWidth="1.5" fill="none">
+          <path d="M3.5 3.5l9 9M12.5 3.5l-9 9" strokeLinecap="round"/>
+        </svg>
+      </button>
+    </div>
+  );
+}
+
 Object.assign(window, {
   relTime, activityLabel, formatDate,
   PhotoSlot, Avatar, Chip, Button, Stars, Badge, Card,
   PhoneShell, TopBar, Sheet, SectionLabel, Notice, WorkerCard,
+  ContactSimToast,
 });

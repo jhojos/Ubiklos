@@ -5,6 +5,11 @@ const { useState: useStateW, useEffect: useEffectW, useMemo: useMemoW } = React;
 
 // ── Worker landing ─────────────────────────────────────────────────────────
 function ScreenWorkerLanding({ ctx }) {
+  const { WORKERS } = window.UBIKLOS_DATA;
+  const stats = {
+    workers: WORKERS.length,
+    confirmed: WORKERS.reduce((s, w) => s + (w.confirmedJobs || 0), 0),
+  };
   return (
     <PhoneShell>
       <div style={{ padding: "12px 18px", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
@@ -16,38 +21,81 @@ function ScreenWorkerLanding({ ctx }) {
         <div style={{ width: 38 }} />
       </div>
 
-      <div style={{ padding: "20px 22px 0" }}>
-        <h1 style={{ font: "700 28px/1.15 var(--font-display)", color: "var(--color-text)", margin: 0, letterSpacing: -0.5, textWrap: "balance" }}>
-          Consigue clientes en tu zona con un perfil verificado.
+      <div style={{ padding: "16px 22px 0" }}>
+        <div style={{
+          display: "inline-flex", alignItems: "center", gap: 6,
+          padding: "5px 10px",
+          background: "var(--color-primary-soft)",
+          color: "var(--color-primary-dark)",
+          borderRadius: 999,
+          font: "600 11px/1 var(--font-sans)",
+          textTransform: "uppercase", letterSpacing: 0.3,
+          marginBottom: 14,
+        }}>
+          <span style={{ width: 6, height: 6, borderRadius: "50%", background: "var(--color-primary)" }} />
+          Para trabajadores · Caracas
+        </div>
+        <h1 style={{ font: "700 26px/1.18 var(--font-display)", color: "var(--color-text)", margin: 0, letterSpacing: -0.5, textWrap: "balance" }}>
+          Consigue clientes con un perfil verificado.
         </h1>
-        <p style={{ font: "500 14.5px/1.5 var(--font-sans)", color: "var(--color-text-muted)", margin: "12px 0 0" }}>
-          Ubiklos no cobra comisión. Solo te conecta con clientes que ya están buscando tu oficio. El contacto pasa directo a tu WhatsApp.
+        <p style={{ font: "500 14px/1.5 var(--font-sans)", color: "var(--color-text-muted)", margin: "10px 0 0" }}>
+          Ubiklos no cobra comisión. Te conecta con clientes que ya están buscando tu oficio. El contacto va directo a tu WhatsApp.
         </p>
       </div>
 
-      <div style={{ padding: "28px 22px 0", display: "flex", flexDirection: "column", gap: 16 }}>
+      <div style={{ padding: "20px 22px 0", display: "flex", flexDirection: "column", gap: 10 }}>
         {[
-          { t: "Sin comisiones ni pagos", d: "El cliente te paga directo, como siempre. Ubiklos no toca el dinero.", icon: <IconShieldCheck size={20} /> },
-          { t: "Cada trabajo cuenta", d: "Cuando un cliente confirma que te contrató, tu historial crece. Es tu mejor publicidad.", icon: <IconCheckCircle size={20} /> },
-          { t: "Tu propio link", d: "Te damos una página web tuya: ubiklos.com/tu-nombre. La compartes por WhatsApp.", icon: <IconUser size={20} /> },
+          { t: "Sin comisiones ni pagos", d: "El cliente te paga directo, como siempre. Ubiklos no toca el dinero.", icon: <IconShieldCheck size={18} /> },
+          { t: "Cada trabajo cuenta", d: "Cuando un cliente confirma que te contrató, tu historial crece. Es tu mejor publicidad.", icon: <IconCheckCircle size={18} /> },
+          { t: "Tu propio link", d: "Te damos una página web tuya: ubiklos.com/tu-nombre. La compartes por WhatsApp.", icon: <IconUser size={18} /> },
         ].map((b) => (
-          <div key={b.t} style={{ display: "flex", gap: 14, alignItems: "flex-start" }}>
-            <div style={{ width: 40, height: 40, borderRadius: 10, background: "var(--color-primary-soft)", color: "var(--color-primary-dark)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>{b.icon}</div>
-            <div>
-              <div style={{ font: "600 15px/1.25 var(--font-display)", color: "var(--color-text)" }}>{b.t}</div>
-              <div style={{ font: "500 13.5px/1.45 var(--font-sans)", color: "var(--color-text-muted)", marginTop: 3 }}>{b.d}</div>
+          <div key={b.t} style={{
+            display: "flex", gap: 12, alignItems: "flex-start",
+            padding: "12px 14px",
+            background: "#fff",
+            border: "1px solid var(--color-border)",
+            borderRadius: 12,
+          }}>
+            <div style={{
+              width: 6, flexShrink: 0,
+              borderRadius: 3,
+              background: "var(--color-primary)",
+              alignSelf: "stretch",
+            }} />
+            <div style={{
+              width: 32, height: 32, borderRadius: 8,
+              background: "var(--color-primary-soft)",
+              color: "var(--color-primary-dark)",
+              display: "flex", alignItems: "center", justifyContent: "center",
+              flexShrink: 0,
+            }}>{b.icon}</div>
+            <div style={{ flex: 1, minWidth: 0 }}>
+              <div style={{ font: "600 14px/1.25 var(--font-display)", color: "var(--color-text)" }}>{b.t}</div>
+              <div style={{ font: "500 12.5px/1.45 var(--font-sans)", color: "var(--color-text-muted)", marginTop: 3 }}>{b.d}</div>
             </div>
           </div>
         ))}
       </div>
 
       <div style={{ flex: 1 }} />
-      <div style={{ padding: "28px 22px 24px" }}>
+      <div style={{ padding: "20px 22px 24px" }}>
         <Button variant="primary" size="lg" full onClick={() => ctx.go("worker.register", { step: 1 })}>
           Crear mi perfil
         </Button>
-        <div style={{ font: "500 12px/1.4 var(--font-sans)", color: "var(--color-text-muted)", textAlign: "center", marginTop: 12 }}>
+        <div style={{ font: "500 12px/1.4 var(--font-sans)", color: "var(--color-text-muted)", textAlign: "center", marginTop: 10 }}>
           Toma menos de 8 minutos. Necesitas tu cédula a mano.
+        </div>
+        <div style={{
+          marginTop: 16,
+          padding: "10px 12px",
+          background: "var(--color-bg-soft)",
+          border: "1px solid var(--color-border)",
+          borderRadius: 10,
+          textAlign: "center",
+          font: "500 11.5px/1.4 var(--font-sans)",
+          color: "var(--color-text-muted)",
+        }}>
+          <strong style={{ color: "var(--color-text)" }}>{stats.workers}</strong> trabajadores activos · <strong style={{ color: "var(--color-text)" }}>{stats.confirmed}</strong> trabajos confirmados
         </div>
       </div>
     </PhoneShell>
