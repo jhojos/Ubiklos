@@ -1,0 +1,32 @@
+{
+  "name": "Ubiklos",
+  "short_name": "Ubiklos",
+  "description": "Encuentra plomeros, electricistas, albañiles, pintores y cerrajeros verificados en tu zona de Caracas.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "lang": "es-VE",
+  "background_color": "#F7F7FB",
+  "theme_color": "#7B7AC4",
+  "icons": [
+    {
+      "src": "icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icons/icon-512-maskable.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ]
+}

@@ -1,0 +1,388 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>Ubiklos — Prototipo</title>
+<meta name="description" content="Encuentra plomeros, electricistas, albañiles, pintores y cerrajeros verificados en tu zona de Caracas." />
+
+<!-- PWA -->
+<link rel="manifest" href="manifest.webmanifest" />
+<meta name="theme-color" content="#7B7AC4" />
+<meta name="application-name" content="Ubiklos" />
+
+<!-- Favicons -->
+<link rel="icon" type="image/x-icon" href="icons/favicon.ico" />
+<link rel="icon" type="image/png" sizes="16x16" href="icons/favicon-16.png" />
+<link rel="icon" type="image/png" sizes="32x32" href="icons/favicon-32.png" />
+<link rel="icon" type="image/png" sizes="48x48" href="icons/favicon-48.png" />
+
+<!-- iOS -->
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="default" />
+<meta name="apple-mobile-web-app-title" content="Ubiklos" />
+
+<!-- Open Graph (cuando se comparte el link) -->
+<meta property="og:title" content="Ubiklos" />
+<meta property="og:description" content="Encuentra trabajadores verificados de oficios del hogar en Caracas." />
+<meta property="og:image" content="icons/icon-512.png" />
+<meta property="og:type" content="website" />
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&family=Fraunces:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --color-primary: #7B7AC4;
+    --color-secondary: #7DC6E8;
+    --color-text: #0E1530;
+    --color-bg: #F7F7FB;
+    --color-primary-soft: rgba(123,122,196,0.14);
+    --color-primary-dark: #5B5AAB;
+    --color-text-muted: #6B6F84;
+    --color-bg-soft: #F0F0F5;
+    --color-border: #E8E8EE;
+    --color-whatsapp: #25D366;
+    --color-whatsapp-dark: #0e7a3b;
+    --color-amber: #E5A019;
+    --radius: 12px;
+    --font-sans: system-ui, -apple-system, 'Segoe UI', sans-serif;
+    --font-display: system-ui, -apple-system, 'Segoe UI', sans-serif;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; min-height: 100vh; background: #1A1F2E; font-family: var(--font-sans); -webkit-font-smoothing: antialiased; }
+  body { overflow: hidden; }
+  button { font-family: inherit; }
+  input, textarea, select { font-family: inherit; }
+  textarea, input { -webkit-appearance: none; }
+
+  .app-root {
+    display: grid;
+    grid-template-columns: 1fr 260px;
+    height: 100vh;
+    width: 100vw;
+    background: radial-gradient(ellipse 80% 50% at 35% 30%, rgba(123,122,196,0.18), transparent 60%),
+                radial-gradient(ellipse 70% 40% at 70% 70%, rgba(125,198,232,0.12), transparent 60%),
+                #15182A;
+    overflow: hidden;
+  }
+
+  /* ── Phone frame ─────────────────────────────────────────────── */
+  .phone-frame-outer {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+    min-height: 0;
+    overflow: hidden;
+  }
+  .phone-frame {
+    width: 392px;
+    height: 820px;
+    max-height: calc(100vh - 48px);
+    background: #0B0E1A;
+    border-radius: 48px;
+    padding: 10px;
+    box-shadow:
+      0 0 0 1px rgba(255,255,255,0.06) inset,
+      0 0 0 1px #050610,
+      0 30px 80px rgba(0,0,0,0.5),
+      0 8px 20px rgba(0,0,0,0.3);
+    position: relative;
+    flex-shrink: 0;
+  }
+  .phone-notch {
+    position: absolute;
+    top: 18px; left: 50%; transform: translateX(-50%);
+    width: 112px; height: 30px;
+    background: #050610;
+    border-radius: 18px;
+    z-index: 20;
+  }
+  .phone-screen {
+    width: 100%;
+    height: 100%;
+    background: var(--color-bg);
+    border-radius: 38px;
+    overflow: hidden;
+    position: relative;
+  }
+  /* Inside-screen layout: a phone has a status bar (44px) at the top and a 
+     scrollable inner. */
+  .phone-shell {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    background: var(--color-bg);
+  }
+  .phone-status {
+    height: 50px;
+    flex-shrink: 0;
+    padding: 16px 28px 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    color: var(--color-text);
+    font: 600 14px/1 var(--font-display);
+    font-variant-numeric: tabular-nums;
+    pointer-events: none;
+  }
+  .phone-status-icons { display: inline-flex; align-items: center; gap: 6px; }
+  .phone-screen-inner {
+    flex: 1;
+    overflow-y: auto;
+    overflow-x: hidden;
+    display: flex;
+    flex-direction: column;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: thin;
+  }
+  .phone-screen-inner::-webkit-scrollbar { width: 6px; }
+  .phone-screen-inner::-webkit-scrollbar-thumb { background: rgba(14,21,48,0.15); border-radius: 3px; }
+
+  /* Top bar inside a screen */
+  .phone-topbar {
+    display: grid;
+    grid-template-columns: 38px 1fr 38px;
+    align-items: center;
+    padding: 8px 14px 12px;
+    gap: 8px;
+  }
+  .phone-topbar-side { display: flex; align-items: center; }
+  .phone-topbar-right { justify-content: flex-end; }
+  .phone-topbar-title {
+    text-align: center;
+    font: 600 15px/1.15 var(--font-display);
+    color: var(--color-text);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  /* Section label */
+  .section-label {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    font: 600 12px/1 var(--font-sans);
+    color: var(--color-text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin: 0 0 10px;
+  }
+
+  /* Sheet */
+  .sheet-backdrop {
+    position: absolute;
+    inset: 0;
+    background: rgba(14,21,48,0.45);
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    z-index: 100;
+    border-radius: 38px;
+    overflow: hidden;
+    animation: fadeIn .15s ease;
+  }
+  @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+  @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+  .sheet-card {
+    width: 100%;
+    background: var(--color-bg);
+    border-top-left-radius: 24px;
+    border-top-right-radius: 24px;
+    padding: 8px 20px 24px;
+    max-height: 80%;
+    overflow-y: auto;
+    animation: slideUp .25s cubic-bezier(.2,.7,.3,1);
+  }
+  .sheet-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 0 14px;
+  }
+  .sheet-body {}
+  .sheet-close {
+    width: 32px; height: 32px;
+    border-radius: 8px;
+    background: rgba(14,21,48,0.05);
+    border: 0;
+    color: var(--color-text);
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+  }
+  /* Drag-indicator on the sheet */
+  .sheet-card::before {
+    content: "";
+    display: block;
+    width: 40px; height: 4px;
+    background: rgba(14,21,48,0.18);
+    border-radius: 2px;
+    margin: 6px auto 6px;
+  }
+
+  /* Hide horizontal scrollbar but allow scrolling */
+  .hide-scroll::-webkit-scrollbar { display: none; }
+  .hide-scroll { scrollbar-width: none; }
+
+  /* Followup floating banner — overlay on home */
+  .followup-floating {
+    position: absolute;
+    top: 56px;
+    left: 0; right: 0;
+    z-index: 12;
+    animation: fadeIn .25s ease;
+    pointer-events: auto;
+  }
+
+  /* ── Persona bar ─────────────────────────────────────────────── */
+  .persona-bar {
+    background: rgba(255,255,255,0.04);
+    border-left: 1px solid rgba(255,255,255,0.06);
+    backdrop-filter: blur(20px);
+    padding: 20px 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    color: #fff;
+    overflow-y: auto;
+  }
+  .persona-bar-head {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding-bottom: 14px;
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+  }
+  .persona-bar-list {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  .persona-btn {
+    all: unset;
+    cursor: pointer;
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    padding: 10px 12px;
+    border-radius: 10px;
+    background: transparent;
+    transition: background .15s;
+  }
+  .persona-btn:hover {
+    background: rgba(255,255,255,0.04);
+  }
+  .persona-btn.is-active {
+    background: rgba(255,255,255,0.09);
+    box-shadow: inset 0 0 0 1px rgba(255,255,255,0.08);
+  }
+  .persona-btn-icon {
+    width: 32px; height: 32px;
+    border-radius: 8px;
+    background: rgba(255,255,255,0.06);
+    display: flex; align-items: center; justify-content: center;
+    color: rgba(255,255,255,0.8);
+  }
+  .persona-btn.is-active .persona-btn-icon {
+    background: var(--color-primary);
+    color: #fff;
+  }
+  .persona-btn-text { flex: 1; }
+  .persona-btn-label { font: 600 13.5px/1.2 var(--font-display); color: #fff; }
+  .persona-btn-hint { font: 500 11.5px/1.3 var(--font-sans); color: rgba(255,255,255,0.55); margin-top: 2px; }
+  .persona-bar-foot {
+    margin-top: auto;
+    font: 500 11px/1.5 var(--font-sans);
+    color: rgba(255,255,255,0.4);
+    padding-top: 14px;
+    border-top: 1px solid rgba(255,255,255,0.08);
+  }
+
+  /* Responsive: collapse persona bar on narrow viewports */
+  @media (max-width: 760px) {
+    .app-root { grid-template-columns: 1fr; }
+    .persona-bar {
+      position: fixed;
+      top: 8px; left: 8px; right: 8px;
+      flex-direction: row;
+      gap: 8px;
+      padding: 8px;
+      border-radius: 14px;
+      background: rgba(0,0,0,0.7);
+      border: 1px solid rgba(255,255,255,0.08);
+      align-items: center;
+      z-index: 200;
+    }
+    .persona-bar-head, .persona-bar-foot { display: none; }
+    .persona-bar-list { flex-direction: row; gap: 4px; flex: 1; }
+    .persona-btn { padding: 6px 8px; }
+    .persona-btn-text { display: none; }
+    .phone-frame-outer { padding-top: 80px; }
+  }
+
+  /* ── Modo PWA instalada (standalone) ───────────────────────────
+     Cuando la app se abre como app instalada, el sistema ya provee
+     pantalla completa. Ocultamos el frame de teléfono simulado y los
+     paneles de demo, y dejamos la app ocupando toda la pantalla. */
+  @media all and (display-mode: standalone) {
+    body { overflow: auto; }
+    .app-root {
+      display: block;
+      background: var(--color-bg);
+      height: 100vh;
+      height: 100dvh;
+    }
+    .tweaks-panel,
+    .persona-bar { display: none !important; }
+    .phone-frame-outer {
+      padding: 0 !important;
+      width: 100vw !important;
+      height: 100vh !important;
+      height: 100dvh !important;
+    }
+    /* Si el "frame" del teléfono tiene bordes, sombras o radius
+       definidos por clases internas, los neutralizamos visualmente
+       expandiendo cualquier hijo directo. */
+    .phone-frame-outer > * {
+      width: 100% !important;
+      height: 100% !important;
+      max-width: 100% !important;
+      max-height: 100% !important;
+      border-radius: 0 !important;
+      box-shadow: none !important;
+      border: none !important;
+    }
+  }
+</style>
+</head>
+<body>
+<div id="root"></div>
+
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+
+<script src="src/data.js"></script>
+<script type="text/babel" src="src/icons.jsx"></script>
+<script type="text/babel" src="src/components.jsx"></script>
+<script type="text/babel" src="src/screens-client.jsx"></script>
+<script type="text/babel" src="src/screens-worker.jsx"></script>
+<script type="text/babel" src="src/screens-admin.jsx"></script>
+<script type="text/babel" src="src/tweaks-panel.jsx"></script>
+<script type="text/babel" src="src/app.jsx"></script>
+
+<!-- Service Worker (PWA) -->
+<script>
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('sw.js')
+        .then((reg) => console.log('[Ubiklos] Service Worker registrado:', reg.scope))
+        .catch((err) => console.warn('[Ubiklos] Falló registro de SW:', err));
+    });
+  }
+</script>
+</body>
+</html>
